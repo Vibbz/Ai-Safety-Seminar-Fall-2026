@@ -114,7 +114,7 @@
   <div class="slop-only hero">
     <p class="badge">🚀 Now with 2x more Thursdays — Fall 2026 cohort is live</p>
     <p class="headline">Unlock the Future of <span class="grad">AI Safety</span> — Seamlessly.</p>
-    <p class="tagline">In today's rapidly evolving landscape, understanding AI alignment isn't just important — it's essential. Join our AI-powered, community-driven seminar and elevate your te[...]</p>
+    <p class="tagline">In today's rapidly evolving landscape, understanding AI alignment isn't just important — it's essential. Join our AI-powered, community-driven seminar and elevate your technical journey to the next level.</p>
     <p class="cta"><a href="#schedule-sec" class="pill big">Join the Seminar — It's Free 🎉</a><a href="#" class="pill big ghost">▶ Watch Demo</a></p>
     <p class="trust">✅ No credit card required &nbsp;·&nbsp; ✅ Cancel anytime &nbsp;·&nbsp; ✅ Chairs provided</p>
   </div>
@@ -185,4 +185,108 @@ var SHEET_GID = "1761156785";
 var REFRESH_MINUTES = 5;
 
 function esc(s) {
-  return String(s).replace(/[&<>\
+  return String(s).replace(/[&<>"']/g, function (c) {
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+  });
+}
+function linkify(s) {
+  return esc(s).replace(/https?:\/\/[^\s<]+/g, function (u) { return '<a href="' + u + '">' + u + '</a>'; });
+}
+function cellText(c) {
+  if (!c) return "";
+  var v = c.f != null ? c.f : c.v;
+  return v == null ? "" : String(v).trim();
+}
+function findCol(header, re) {
+  for (var i = 0; i < header.length; i++) if (re.test(header[i])) return i;
+  return -1;
+}
+
+var loaded = false;
+window.onSheet = function (resp) {
+  loaded = true;
+  var status = document.getElementById("status");
+  if (!resp || resp.status !== "ok") {
+    status.textContent = "Couldn't load the live schedule; showing the last saved version.";
+    return;
+  }
+  var rows = resp.table.rows.map(function (r) { return (r.c || []).map(cellText); });
+
+  // Locate the header row: the first row mentioning both a date and a speaker/name.
+  var h = -1, dateCol = 0, spkCol = 1, topCol = 2;
+  for (var i = 0; i < rows.length; i++) {
+    var d = findCol(rows[i], /date/i), s = findCol(rows[i], /speaker|name|presenter/i);
+    if (d >= 0 && s >= 0) {
+      h = i; dateCol = d; spkCol = s;
+      topCol = findCol(rows[i], /topic|title/i);
+      break;
+    }
+  }
+
+  // Group talks by date.
+  var days = [], cur = null;
+  for (var j = h + 1; j < rows.length; j++) {
+    var r = rows[j];
+    var date = r[dateCol] || "", spk = r[spkCol] || "", top = topCol >= 0 ? (r[topCol] || "") : "";
+    if (!r.join("")) continue;                       // blank row
+    if (date) { cur = { date: date, talks: [] }; days.push(cur); }
+    if (!cur) continue;
+    cur.talks.push({ speaker: spk, topic: top });
+  }
+
+  var html = days.map(function (day) {
+    var dateHtml = esc(day.date.replace(/^Week\s*\d+\s*/i, "").trim()).replace(/\n/g, "<br>");
+    var talks = day.talks;
+    var filled = talks.some(function (t) { return t.speaker || t.topic; });
+    if (!filled && /no (meeting|seminar)|cancel|holiday|thanksgiving/i.test(day.date)) {
+      return '<tr><td colspan="3" class="tbd">' + dateHtml + '</td></tr>';
+    }
+    var spk = talks.map(function (t) { return t.speaker ? esc(t.speaker) : '<span class="tbd">[speaker]</span>'; }).join("<br>");
+    var top = talks.map(function (t) { return t.topic ? linkify(t.topic) : '<span class="tbd">[topic]</span>'; }).join("<br>");
+    return "<tr><td>" + dateHtml + "</td><td>" + spk + "</td><td>" + top + "</td></tr>";
+  }).join("");
+
+  if (!html) { status.textContent = "The sheet loaded but had no schedule rows; showing the last saved version."; return; }
+  document.getElementById("schedule").innerHTML = html;
+  status.textContent = "Schedule updates automatically from the sign-up sheet. Last checked " +
+    new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) + ".";
+};
+
+function loadSheet() {
+  var old = document.getElementById("sheet-jsonp");
+  if (old) old.remove();
+  var s = document.createElement("script");
+  s.id = "sheet-jsonp";
+  s.src = "https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/gviz/tq?gid=" + SHEET_GID +
+          "&headers=0&tqx=out:json;responseHandler:onSheet&_=" + Date.now();
+  s.onerror = function () {
+    document.getElementById("status").textContent =
+      "Couldn't reach the sign-up sheet; showing the last saved version.";
+  };
+  document.body.appendChild(s);
+  // A private sheet returns a sign-in page instead of data, so onSheet never fires.
+  setTimeout(function () {
+    if (!loaded) document.getElementById("status").textContent =
+      "Couldn't read the sign-up sheet (is it shared as “anyone with the link”?); showing the last saved version.";
+  }, 10000);
+}
+loadSheet();
+setInterval(loadSheet, REFRESH_MINUTES * 60 * 1000);
+
+/* Theme toggle: the faint ✦ at the bottom switches to the "AI slop" theme. */
+(function () {
+  var root = document.documentElement, btn = document.getElementById("theme-toggle");
+  function set(on) {
+    root.classList.toggle("slop", on);
+    btn.title = on ? "Return to normal" : "Theme";
+    try { localStorage.setItem("seminar-theme", on ? "slop" : "plain"); } catch (e) {}
+  }
+  try { if (localStorage.getItem("seminar-theme") === "slop") set(true); } catch (e) {}
+  btn.addEventListener("click", function () {
+    set(!root.classList.contains("slop"));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+})();
+</script>
+</body>
+</html>
