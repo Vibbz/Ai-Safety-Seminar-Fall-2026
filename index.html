@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Technical AI Safety Seminar</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #111111; --muted: #555555; --line: #cccccc; --link: #0b4f9c;
+    color-scheme: light;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  *, *::before, *::after { box-sizing: inherit; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font-family: "Latin Modern Roman", "Computer Modern Serif", "Times New Roman", Times, serif;
+    font-size: 18px; line-height: 1.5;
+  }
+  main { max-width: 46rem; margin: 0 auto; padding: 2rem 1rem 3rem; }
+  h1 { font-size: 1.7rem; margin: 0 0 .5rem; font-weight: normal; }
+  h2 { font-size: 1.25rem; margin: 2rem 0 .5rem; font-weight: normal; border-bottom: 1px solid var(--line); }
+  p { margin: .4rem 0; }
+  a { color: var(--link); }
+  .wrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { text-align: left; vertical-align: top; padding: .45rem .75rem .45rem 0; border-bottom: 1px solid var(--line); }
+  th { font-weight: normal; font-style: italic; color: var(--muted); }
+  td:first-child { white-space: nowrap; }
+  .tbd { color: var(--muted); }
+  .status { font-size: .85rem; color: var(--muted); margin-top: .5rem; }
+  ul.refs { margin: .4rem 0; padding-left: 1.2rem; }
+  ul.refs li { margin: .25rem 0; }
+  .site-foot { margin-top: 3rem; text-align: right; }
+  #theme-toggle { background: none; border: 0; padding: 0 .2rem; font: inherit; font-size: .75rem;
+    color: var(--line); opacity: .6; cursor: pointer; }
+  #theme-toggle:hover { opacity: 1; color: var(--muted); }
+  .slop-only { display: none; }
+
+  /* ===== "AI slop" theme ===== */
+  html.slop { --bg:#07071a; --fg:#e9e9ff; --muted:#a3a3cf; --line:rgba(255,255,255,.12); --link:#a78bfa; color-scheme: dark; }
+  html.slop body { font-family: Inter, "Segoe UI", system-ui, sans-serif; font-size: 17px; overflow-x: hidden; }
+  html.slop .slop-only { display: block; }
+  html.slop .orbs i { position: fixed; border-radius: 50%; filter: blur(110px); opacity: .5; pointer-events: none; z-index: 0; }
+  html.slop .orbs i:nth-child(1) { width: 460px; height: 460px; background: #7c3aed; top: -140px; left: -140px; }
+  html.slop .orbs i:nth-child(2) { width: 420px; height: 420px; background: #2563eb; top: 35%; right: -170px; }
+  html.slop .orbs i:nth-child(3) { width: 380px; height: 380px; background: #db2777; bottom: -140px; left: 25%; }
+  html.slop main { position: relative; z-index: 1; max-width: 52rem; padding-top: 3rem; }
+  html.slop .grad { background: linear-gradient(90deg,#a78bfa,#60a5fa 50%,#f472b6); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  html.slop .slop-nav { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin: -1.5rem 0 2.5rem; }
+  html.slop .logo { font-weight: 800; font-size: 1.15rem; }
+  html.slop .nav-links { display: flex; gap: 1.3rem; align-items: center; font-size: .9rem; }
+  html.slop .nav-links a:not(.pill) { color: var(--muted); text-decoration: none; }
+  html.slop .pill { display: inline-block; color: #fff; text-decoration: none; font-weight: 600; font-size: .9rem; padding: .55rem 1.2rem;
+    border-radius: 999px; background: linear-gradient(90deg,#7c3aed,#2563eb); box-shadow: 0 0 24px rgba(124,58,237,.55); }
+  html.slop .pill.big { font-size: 1.05rem; padding: .9rem 1.8rem; }
+  html.slop .pill.ghost { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.2); box-shadow: none; }
+  html.slop .hero { text-align: center; margin-bottom: 3rem; }
+  html.slop .headline { font-size: clamp(2.3rem, 7vw, 4rem); font-weight: 800; line-height: 1.05; letter-spacing: -2px; margin: .4rem 0 1.2rem; }
+  html.slop .hero .tagline { margin: 0 auto 1.8rem; }
+  html.slop .cta { display: flex; gap: .8rem; justify-content: center; flex-wrap: wrap; }
+  html.slop .trust { font-size: .8rem; color: #8f8fb8; margin-top: 1.2rem; }
+  html.slop .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: .9rem; margin: 2rem 0 .5rem; }
+  html.slop .stats div { text-align: center; padding: 1.3rem .6rem; border-radius: 20px;
+    background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(14px); }
+  html.slop .stats b { display: block; font-size: 2.2rem; font-weight: 800; line-height: 1.2; }
+  html.slop .stats small { color: var(--muted); font-size: .8rem; }
+  html.slop .eyebrow { margin: 3rem 0 -2.2rem; color: #a78bfa; font-weight: 700; letter-spacing: 2px; font-size: .78rem; text-transform: uppercase; }
+  html.slop .lede { color: var(--muted); margin: .2rem 0 1.1rem; }
+  @media (max-width: 640px) {
+    html.slop .stats { grid-template-columns: 1fr 1fr; }
+    html.slop .nav-links a:not(.pill) { display: none; }
+  }
+  html.slop .badge { display: inline-block; font-size: .8rem; padding: .3rem .9rem; border-radius: 999px;
+    background: rgba(167,139,250,.15); border: 1px solid rgba(167,139,250,.4); margin-bottom: 1rem; }
+  html.slop h1 { font-size: clamp(2.4rem, 7vw, 3.8rem); font-weight: 800; letter-spacing: -1.5px; line-height: 1.05;
+    background: linear-gradient(90deg,#a78bfa,#60a5fa 50%,#f472b6); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  html.slop h1::before { content: "✨ "; -webkit-text-fill-color: initial; }
+  html.slop .kicker { text-transform: uppercase; letter-spacing: 2px; font-size: .8rem; font-weight: 700; color: #a78bfa; }
+  html.slop .tagline { font-size: 1.1rem; color: var(--muted); max-width: 40rem; margin: 1rem 0 1.4rem; }
+  html.slop .info, html.slop .wrap, html.slop ul.refs {
+    background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(14px);
+    border-radius: 20px; box-shadow: 0 8px 40px rgba(124,58,237,.2); padding: 1.1rem 1.4rem; }
+  html.slop .info .tbd { color: var(--fg); font-weight: 600; }
+  html.slop h2 { font-weight: 800; font-size: 1.7rem; letter-spacing: -.5px; border: 0; margin-top: 2.6rem; }
+  html.slop h2::after { content: ""; display: block; width: 56px; height: 4px; margin-top: .4rem; border-radius: 4px;
+    background: linear-gradient(90deg,#7c3aed,#f472b6); }
+  html.slop h2.sched-h::before { content: "🗓️ "; }
+  html.slop h2.mat-h::before { content: "📚 "; }
+  html.slop th { font-style: normal; text-transform: uppercase; letter-spacing: 1.5px; font-size: .75rem; font-weight: 700; color: #a78bfa; }
+  html.slop td { padding-top: .8rem; padding-bottom: .8rem; }
+  html.slop tr:last-child td { border-bottom: 0; }
+  html.slop td:first-child { font-weight: 700; }
+  html.slop ul.refs { list-style: none; }
+  html.slop ul.refs li::before { content: "🚀 "; }
+  html.slop .status::before { content: "⚡ "; }
+  html.slop .slop-foot { text-align: center; font-size: .8rem; color: var(--muted); margin-top: 3rem; }
+  html.slop .site-foot { text-align: center; margin-top: 1rem; }
+  html.slop #theme-toggle { opacity: 1; color: #fff; font-size: .85rem; padding: .5rem 1.2rem; border-radius: 999px;
+    background: linear-gradient(90deg,#7c3aed,#2563eb); box-shadow: 0 0 24px rgba(124,58,237,.6); }
+  html.slop #theme-toggle::after { content: " Return to normal"; }
+  html.slop h1 { font-size: 2rem; letter-spacing: -.5px; }   /* the hero headline is the big title now */
+</style>
+</head>
+<body>
+<div class="slop-only orbs" aria-hidden="true"><i></i><i></i><i></i></div>
+<main>
+  <nav class="slop-only slop-nav">
+    <span class="logo">✨ <b class="grad">SafetySync</b> AI</span>
+    <span class="nav-links"><a href="#schedule-sec">Schedule</a><a href="#materials-sec">Resources</a><a href="#schedule-sec" class="pill">Get Started →</a></span>
+  </nav>
+  <div class="slop-only hero">
+    <p class="badge">🚀 Now with 2x more Thursdays — Fall 2026 cohort is live</p>
+    <p class="headline">Unlock the Future of <span class="grad">AI Safety</span> — Seamlessly.</p>
+    <p class="tagline">In today's rapidly evolving landscape, understanding AI alignment isn't just important — it's essential. Join our AI-powered, community-driven seminar and elevate your te[...]</p>
+    <p class="cta"><a href="#schedule-sec" class="pill big">Join the Seminar — It's Free 🎉</a><a href="#" class="pill big ghost">▶ Watch Demo</a></p>
+    <p class="trust">✅ No credit card required &nbsp;·&nbsp; ✅ Cancel anytime &nbsp;·&nbsp; ✅ Chairs provided</p>
+  </div>
+  <h1>AI Safety Seminar</h1>
+  <p class="kicker">Graduate math seminar, Fall 2026</p>
+  <p class="info">Organizer: <span class="tbd">Etienne Phillips</span><br>
+     Time: Thursdays, <span class="tbd">12-2pm</span><br>
+     Place: <span class="tbd">Evans 732</span></p>
+
+  <div class="slop-only stats">
+    <div><b class="grad">10x</b><small>deeper understanding*</small></div>
+    <div><b class="grad">7</b><small>transformative sessions</small></div>
+    <div><b class="grad">14</b><small>world-class speaker slots</small></div>
+    <div><b class="grad">99%</b><small>of attendees were present</small></div>
+  </div>
+
+  <p class="slop-only eyebrow" id="schedule-sec">Your Roadmap</p>
+  <h2 class="sched-h">Schedule</h2>
+  <p class="slop-only lede">A journey of 7 transformative weeks. Every Thursday, 12–2 PM. Two sessions. Endless possibilities.</p>
+  <div class="wrap">
+  <table>
+    <thead><tr><th>Date</th><th>Speaker</th><th>Topic</th></tr></thead>
+    <!-- Fallback rows, shown until (or if) the live sheet loads -->
+    <tbody id="schedule">
+    <tr>
+      <td>Oct. 22</td>
+      <td><span class="tbd">[speaker]</span><br><span class="tbd">[speaker]</span></td>
+      <td>Information theory<br>Probability theory (Tony’s Notes, 1.2–1.3), tentative</td>
+    </tr>
+    <tr>
+      <td>Oct. 29</td>
+      <td><span class="tbd">[speaker]</span></td>
+      <td>Transformers, from the <a href="https://arxiv.org/abs/1706.03762">original paper</a> or Tony’s Notes</td>
+    </tr>
+    <tr>
+      <td>Nov. 5</td>
+      <td>Emma</td>
+      <td>Reinforcement learning</td>
+    </tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="status" id="status">Loading the latest schedule&hellip;</p>
+
+  <p class="slop-only eyebrow" id="materials-sec">Curated Resources</p>
+  <h2 class="mat-h">Supplementary materials</h2>
+  <p class="slop-only lede">Everything you need to navigate the alignment landscape — all in one centralized hub.</p>
+  <ul class="refs">
+    <li>T. Feng, <a href="https://math.berkeley.edu/~fengt/2025F_270_notes.pdf">Lecture notes</a> (PDF).</li>
+    <li><a href="https://iliad-intensive.org/">Iliad curriculum</a>.</li>
+    <li>Fields Academy, <a href="https://www.fields.utoronto.ca/activities/26-27/SGC-safety">Mathematics for AI Safety</a>.</li>
+    <li>A. Vaswani et al., <a href="https://arxiv.org/abs/1706.03762">Attention is all you need</a>, 2017.</li>
+  </ul>
+  <p class="tbd">Slides and notes from talks will be posted here.</p>
+
+  <p class="slop-only slop-foot">✨ Built with ❤️, synergy, and a lot of em dashes — © 2026. Not safety advice.<br>*Statistics are illustrative and were generated, not measured.</p>
+  <footer class="site-foot"><button id="theme-toggle" type="button" title="Theme" aria-label="Switch theme">✦</button></footer>
+</main>
+
+<script>
+/* Live schedule from Google Sheets.
+   The sheet must be shared as "Anyone with the link can view" (or published to the web).
+   Columns are found by header text: Date, Speaker (or Name), Topic (or Title).
+   Blank date cells (e.g. merged cells) inherit the date above, so several talks
+   on one day are grouped into one row. */
+var SHEET_ID = "1lUyCSAOwzYLf5bVzlN2X64EmYdfNZUc2jgkgjUkU6tI";
+var SHEET_GID = "1761156785";
+var REFRESH_MINUTES = 5;
+
+function esc(s) {
+  return String(s).replace(/[&<>\
