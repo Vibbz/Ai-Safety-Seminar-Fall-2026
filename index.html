@@ -37,6 +37,9 @@
   #theme-toggle { background: none; border: 0; padding: 0 .2rem; font: inherit; font-size: .75rem;
     color: var(--line); opacity: .6; cursor: pointer; }
   #theme-toggle:hover { opacity: 1; color: var(--muted); }
+  .blurb { margin-top: 1.2rem; }
+  .blurb p { margin: .6rem 0; }
+  .signup-link { margin-top: 1.2rem; }
   .slop-only { display: none; }
 
   /* ===== "AI slop" theme ===== */
@@ -115,7 +118,7 @@
     <p class="badge">🚀 Now with 2x more Thursdays — Fall 2026 cohort is live</p>
     <p class="headline">Unlock the Future of <span class="grad">AI Safety</span> — Seamlessly.</p>
     <p class="tagline">In today's rapidly evolving landscape, understanding AI alignment isn't just important — it's essential. Join our AI-powered, community-driven seminar and elevate your technical journey to the next level.</p>
-    <p class="cta"><a href="#schedule-sec" class="pill big">Join the Seminar — It's Free 🎉</a><a href="#" class="pill big ghost">▶ Watch Demo</a></p>
+    <p class="cta"><a href="#schedule-sec" class="pill big">Join the Seminar — It's Free 🎉</a><a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" rel="noopener" class="pill big ghost">▶ Watch Demo</a></p>
     <p class="trust">✅ No credit card required &nbsp;·&nbsp; ✅ Cancel anytime &nbsp;·&nbsp; ✅ Chairs provided</p>
   </div>
   <h1>AI Safety Seminar</h1>
@@ -131,6 +134,12 @@
     <div><b class="grad">99%</b><small>of attendees were present</small></div>
   </div>
 
+  <div class="blurb">
+    <p>This is a learning seminar geared towards math or other graduate students interested in learning about topics in AI safety. Each week will consist of two talks, one from 12:10–1pm and one from 1:10–2pm. Generally, the first talk will be aimed at covering background material for technical AI safety problems, whereas the second is more open to be about more recent research advances or questions.</p>
+    <p><i>Prerequisites:</i> We are assuming only basic knowledge of neural networks, as most of us are completely new to the field. The first five videos by <a href="https://www.3blue1brown.com/?topic=neural-networks" target="_blank" rel="noopener">3Blue1Brown</a> on neural networks, or section 1.1 of <a href="https://math.berkeley.edu/~fengt/2025F_270_notes.pdf" target="_blank" rel="noopener">Tony Feng's survey of ML course</a>, and mathematical maturity will be enough.</p>
+    <p>If you'd like to sign up to give a talk or get access to the Discord, please email <a href="mailto:ephil@berkeley.edu">ephil@berkeley.edu</a>.</p>
+  </div>
+  <p class="signup-link"><a href="https://docs.google.com/spreadsheets/d/1lUyCSAOwzYLf5bVzlN2X64EmYdfNZUc2jgkgjUkU6tI/edit?gid=1761156785#gid=1761156785" target="_blank" rel="noopener">Speaker sign-up sheet</a></p>
   <p class="slop-only eyebrow" id="schedule-sec">Your Roadmap</p>
   <h2 class="sched-h">Schedule</h2>
   <p class="slop-only lede">A journey of 7 transformative weeks. Every Thursday, 12–2 PM. Two sessions. Endless possibilities.</p>
@@ -141,12 +150,12 @@
     <tbody id="schedule">
     <tr>
       <td>Oct. 22</td>
-      <td><span class="tbd">[speaker]</span><br><span class="tbd">[speaker]</span></td>
+      <td><span class="tbd">TBD</span><br><span class="tbd">TBD</span></td>
       <td>Information theory<br>Probability theory (Tony’s Notes, 1.2–1.3), tentative</td>
     </tr>
     <tr>
       <td>Oct. 29</td>
-      <td><span class="tbd">[speaker]</span></td>
+      <td><span class="tbd">TBD</span></td>
       <td>Transformers, from the <a href="https://arxiv.org/abs/1706.03762">original paper</a> or Tony’s Notes</td>
     </tr>
     <tr>
@@ -241,8 +250,8 @@ window.onSheet = function (resp) {
     if (!filled && /no (meeting|seminar)|cancel|holiday|thanksgiving/i.test(day.date)) {
       return '<tr><td colspan="3" class="tbd">' + dateHtml + '</td></tr>';
     }
-    var spk = talks.map(function (t) { return t.speaker ? esc(t.speaker) : '<span class="tbd">[speaker]</span>'; }).join("<br>");
-    var top = talks.map(function (t) { return t.topic ? linkify(t.topic) : '<span class="tbd">[topic]</span>'; }).join("<br>");
+    var spk = talks.map(function (t) { return t.speaker ? esc(t.speaker) : '<span class="tbd">TBD</span>'; }).join("<br>");
+    var top = talks.map(function (t) { return t.topic ? linkify(t.topic) : ""; }).join("<br>");
     return "<tr><td>" + dateHtml + "</td><td>" + spk + "</td><td>" + top + "</td></tr>";
   }).join("");
 
